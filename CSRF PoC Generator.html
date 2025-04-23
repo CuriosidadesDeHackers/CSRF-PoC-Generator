@@ -1,10 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <head>
+    <meta property="og:title" content="Generador CSRF POC Avanzado">
+    <meta property="og:description" content="Este proyecto es una herramienta web diseñada para generar pruebas de concepto (PoC) de ataques CSRF (Cross-Site Request Forgery) a partir de una petición HTTP completa. Es útil para investigadores de seguridad.">
+    <meta property="og:image" content="https://curiosidadesdehackers.com/wp-content/uploads/2024/05/2023-07-07_18-07-removebg-preview-1-244x300.png">
+    <meta property="og:url" content="https://csrf.curiosidadesdehackers.com/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Generador CSRF POC Avanzado">
+    <meta name="twitter:description" content="Este proyecto es una herramienta web diseñada para generar pruebas de concepto (PoC) de ataques CSRF (Cross-Site Request Forgery) a partir de una petición HTTP completa. Es útil para investigadores de seguridad.">
+    <meta name="twitter:image" content="https://curiosidadesdehackers.com/wp-content/uploads/2024/05/2023-07-07_18-07-removebg-preview-1-244x300.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador CSRF POC Avanzado</title>
     <link rel="icon" href="https://curiosidadesdehackers.com/wp-content/uploads/2024/05/2023-07-07_18-07-removebg-preview-1-244x300.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -132,12 +143,75 @@
             background-color: white;
             margin-top: 10px;
         }
+        .generated-by {
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+            font-style: italic;
+        }
+        
+        /* Estilos para redes sociales */
+        #social-media {
+            text-align: center;
+            margin: 30px 0 20px;
+            width: 100%;
+        }
+        
+        #social-media h3 {
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .social-buttons a {
+            color: #fff;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-buttons a:hover {
+            transform: translateY(-3px);
+            opacity: 0.8;
+        }
+        
+        .fa-youtube { color: #FF0000; }
+        .fa-telegram { color: #0088cc; }
+        .fa-x-twitter { color: #000000; }
+        .fa-linkedin { color: #0077B5; }
+        .fa-instagram { color: #E1306C; }
+        .fa-github { color: #333; }
+        
+        /* Estilos para el footer */
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+            color: #fff;
+            font-size: 14px;
+            border-top: 1px solid #009ee1;
+        }
+        
         @media (max-width: 768px) {
             .button-group {
                 flex-direction: column;
             }
             button {
                 width: 100%;
+            }
+            
+            .social-buttons {
+                gap: 10px;
+            }
+            
+            .social-buttons a {
+                font-size: 20px;
             }
         }
     </style>
@@ -175,6 +249,7 @@ param1=value1&param2=value2"></textarea>
                 <label class="output-label" for="html-output">POC HTML:</label>
                 <textarea id="html-output" rows="15" readonly></textarea>
             </div>
+            <div class="generated-by">Generado por CSRF PoC de Curiosidades De Hackers</div>
         </div>
         
         <div id="curl-poc" class="tab-content">
@@ -183,6 +258,7 @@ param1=value1&param2=value2"></textarea>
                 <label class="output-label" for="curl-output">POC cURL:</label>
                 <textarea id="curl-output" rows="5" readonly></textarea>
             </div>
+            <div class="generated-by">Generado por CSRF PoC de Curiosidades De Hackers</div>
         </div>
         
         <div id="js-poc" class="tab-content">
@@ -191,6 +267,7 @@ param1=value1&param2=value2"></textarea>
                 <label class="output-label" for="js-output">POC JavaScript:</label>
                 <textarea id="js-output" rows="10" readonly></textarea>
             </div>
+            <div class="generated-by">Generado por CSRF PoC de Curiosidades De Hackers</div>
         </div>
         
         <div id="preview-poc" class="tab-content">
@@ -198,8 +275,31 @@ param1=value1&param2=value2"></textarea>
                 <label class="output-label">Vista Previa HTML:</label>
                 <iframe id="html-preview" sandbox="allow-scripts"></iframe>
             </div>
+            <div class="generated-by">Generado por CSRF PoC de Curiosidades De Hackers</div>
         </div>
+        
+        <section id="social-media">
+            <h3>Puedes seguirme en:</h3>
+            <div class="social-buttons">
+                <a href="https://www.youtube.com/channel/UCyFq3OKciq3VMNpTmzV1XTA" target="_blank" class="fab fa-youtube"></a>
+                <a href="https://t.me/CuriosidadesDeHackers" target="_blank" class="fab fa-telegram"></a>
+                <a href="https://twitter.com/HackersCuriosos" target="_blank" class="fab fa-x-twitter"></a> 
+                <a href="https://es.linkedin.com/in/manuel-mart%C3%ADnez-curiosidades-de-hackers-55b245289" target="_blank" class="fab fa-linkedin"></a>
+                <a href="https://www.instagram.com/curiosidadesdehackers/" target="_blank" class="fab fa-instagram"></a>
+                <a href="https://github.com/CuriosidadesDeHackers" target="_blank" class="fab fa-github"></a>
+            </div>
+        </section>
     </div>
+    
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-4 text-start">
+                    <p> © CuriosidadesDeHackers 2023-2025.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script>
         function openTab(tabId) {
@@ -318,7 +418,8 @@ subname=&subemail=pepe%40gmail.com&subscribe.x=ssssssss&subscribe.y=3&mlist=ensn
         }
         
         function generateHtmlPoc(method, url, params) {
-            let htmlPoc = `<html>\n  <body>\n    <form action="${url}" method="${method}">\n`;
+            let htmlPoc = `<!-- Generado por CSRF PoC de Curiosidades De Hackers -->\n`;
+            htmlPoc += `<html>\n  <body>\n    <form action="${url}" method="${method}">\n`;
             
             for (const [key, value] of Object.entries(params)) {
                 // Escapar caracteres especiales para HTML
@@ -343,7 +444,8 @@ subname=&subemail=pepe%40gmail.com&subscribe.x=ssssssss&subscribe.y=3&mlist=ensn
         }
         
         function generateCurlPoc(method, url, params, originalRequest) {
-            let curlCommand = `curl -X ${method} '${url}' \\\n`;
+            let curlCommand = `# Generado por CSRF PoC de Curiosidades De Hackers\n`;
+            curlCommand += `curl -X ${method} '${url}' \\\n`;
             
             // Extraer headers importantes de la petición original
             const headers = {};
@@ -372,7 +474,8 @@ subname=&subemail=pepe%40gmail.com&subscribe.x=ssssssss&subscribe.y=3&mlist=ensn
         }
         
         function generateJsPoc(method, url, params) {
-            let jsPoc = `// POC CSRF con JavaScript\n`;
+            let jsPoc = `// Generado por CSRF PoC de Curiosidades De Hackers\n`;
+            jsPoc += `// POC CSRF con JavaScript\n`;
             jsPoc += `const url = '${url}';\n\n`;
             
             if (method.toUpperCase() === 'GET') {
