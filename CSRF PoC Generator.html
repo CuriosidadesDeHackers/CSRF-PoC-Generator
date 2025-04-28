@@ -45,6 +45,23 @@
             margin-bottom: 20px;
             font-size: clamp(24px, 4vw, 32px);
         }
+        .download-button {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px;
+            background-color: #009ee1;
+            color: white;
+            cursor: pointer;
+            font-size: clamp(16px, 2vw, 18px);
+            transition: background-color 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .download-button:hover {
+            background-color: #007bb8;
+        }
         h2 {
             color: white;
             text-align: center;
@@ -282,7 +299,7 @@
         .social-buttons a.fa-globe { background-color: #4CAF50; }
         .social-buttons a.fa-youtube { background-color: #FF0000; }
         .social-buttons a.fa-telegram { background-color: #0088cc; }
-        .social-buttons a.fa-x-twitter { background-color: #1d9bf0; }
+        .social-buttons a.fa-x-twitter { background-color: #000000; }
         .social-buttons a.fa-linkedin { background-color: #0077b5; }
         .social-buttons a.fa-instagram {
             background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
@@ -411,6 +428,8 @@ param1=value1&param2=value2"></textarea>
             </div>
             <div class="generated-by">Generado por CSRF PoC de Curiosidades De Hackers</div>
         </div>
+
+        <a href="https://github.com/CuriosidadesDeHackers/CSRF-PoC-Generator-Avanzado---Burp-Suite-Extension.git" class="download-button">Descargar Plugin para Burpsuite</a>
 
         <section id="social-media">
             <h3>Puedes seguirme en:</h3>
